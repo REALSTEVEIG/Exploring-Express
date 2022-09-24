@@ -16,9 +16,14 @@ app.use(express.urlencoded({extended : true}))
 
 // app.use('/', )
 
-// app.use('/checker') = (req, res) => {
-//     res.redirect('http://www.google.com')
-// }
+// app.get('/', (req, res) => {
+//     res.redirect('http://www.google.com/?q=book+published+in+year+2022')
+// })
+
+
+// app.get('/facebook', (req, res) => {
+//     res.redirect('https://web.facebook.com/stephen.ignatius.92/')
+// })
 
 app.use(errorhandlermiddler)
 app.use(notFoundMiddleware)

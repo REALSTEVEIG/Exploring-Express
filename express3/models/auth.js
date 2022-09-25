@@ -41,7 +41,7 @@ const authSchema = new mongoose.Schema({
       return jwt.sign({id : this._id, username : this.username}, process.env.JWT_SECRET, {expiresIn : process.env.JWT_LIFETIME})
     }
 
-    authSchema.comparePassword = async function (candidatePassword) {
+    authSchema.methods.comparePassword = async function (candidatePassword) {
       const isMatch = await bcrypt.compare(candidatePassword, this.password)
       return isMatch
     } 

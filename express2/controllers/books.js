@@ -31,7 +31,7 @@ exports.getSingleBook = async (req, res) => {
 
         const {id : bookId} = req.params
 
-        const singleBook = await Books.findOne({bookId})
+        const singleBook = await Books.findOne({_id : bookId})
     
         if (!singleBook) {
             throw new NotFoundAPIError(`No book with id ${bookId}`)

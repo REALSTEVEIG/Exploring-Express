@@ -47,13 +47,72 @@ exports.getSingleBudget = async (req, res) => {
 }
 
 exports.getAllBudgets = async (req, res) => {
-    try {
-        const allBudgets = await Budget.find({})
+    // try {
+    //     const allBudgets = await Budget.find({})
 
-        return res.status(StatusCodes.OK).json({allBudgets, total_budget : allBudgets.length})
+    //     return res.status(StatusCodes.OK).json({allBudgets, total_budget : allBudgets.length})
+    // } catch (error) {
+    //     console.log(error)
+    //     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error : error.message})
+    // }
+
+    try {
+        const {name, sort, field, priceFilter} =  req.query
+        
+        let queryObject = {}
+
+        if (name) {
+            queryObject.budgetName = {$regex : name, $options : 'xi'}
+        }
+
+        if (priceFilter) {
+            const operatorMap = {
+                "<" : "$lt",
+                "<=" : "$lte",
+                "=" : "$eq",
+                ">" : "$gt",
+                ">=" : "$gte"
+            }
+
+            const regEx = /\b(<|<=|=|>|>=)\b/g
+
+            let filter = priceFilter.replace(regEx, (match) => `*${operatorMap[match]}*`)
+            console.log(filter)
+
+            const options = ['budgetCost']
+
+            filter = filter.split(',').forEach((item) => {
+                const [fields, regex, value] = item.split('*')
+                if (options.includes(fields)) {
+                    queryObject[fields] = {[regex] : Number(value)}
+                    console.log(queryObject)
+                }
+            })
+        }
+
+        let result = Budget.find(queryObject)
+
+        if (sort) {
+            let sortList = sort.split(',').join(' ')
+            result = result.sort(sortList)
+        }
+
+        else {
+            result = result.sort('budgetName')
+        }
+
+        if (field) {
+            let fieldList = field.split(',').join(' ')
+            result = result.select(fieldList)
+        }
+
+        const budgets = await result
+        
+        return res.status(StatusCodes.OK).json({total : budgets.length, budgets})
+        
     } catch (error) {
         console.log(error)
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error : error.message})
+        return res.status(StatusCodes.OK).json({error})
     }
 }
 

@@ -4,7 +4,7 @@ require('express-async-errors') //importing the express module for asynchronous 
 const express = require('express')
 const app = express() // Initializing an instance for express 
 
-const port = process.env.PORT || 3300 //localhost to run server
+const port = process.env.PORT || 7700 //localhost to run server
 
 const mongouri = process.env.MONGO_URI //connection string for my database
 

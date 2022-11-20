@@ -5,6 +5,14 @@ const budgetSchema = new mongoose.Schema({
         type : String
     },
 
+    featured : {
+        type : Boolean
+    },
+
+    price : {
+        type : Number
+    },
+
     budgetPrice : {
         type : String
     },

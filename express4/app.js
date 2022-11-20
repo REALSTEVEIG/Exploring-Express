@@ -3,7 +3,7 @@ require('express-async-errors')
 
 const express = require('express')
 const app = express()
-const port = 6000 
+const port = 7700 
 const connect = require('./db/connect')
 const authRouter = require('./routes/auth')
 const budgetRouter = require('./routes/budget')

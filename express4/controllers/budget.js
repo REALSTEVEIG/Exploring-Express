@@ -2,6 +2,7 @@ const { BadRequestAPIError } = require("../errors")
 const Budget = require('../models/budget')
 const jwt = require('jsonwebtoken')
 const { StatusCodes } = require("http-status-codes")
+const { listenerCount } = require("../models/budget")
 
 exports.createBudget = async (req, res) => {
     try {
@@ -30,16 +31,79 @@ exports.createBudget = async (req, res) => {
 }
 
 exports.getAllBudgets = async (req, res) => {
-    try {
-        const token = req.cookies.token
-        const payload = jwt.verify(token, process.env.JWT_SECRET)
-        const requestedBy  = payload.username
+    // try {
+    //     const token = req.cookies.token
+    //     const payload = jwt.verify(token, process.env.JWT_SECRET)
+    //     const requestedBy  = payload.username
 
-        const allProducts = await Budget.find()
-        res.status(StatusCodes.OK).json({allProducts, count : allProducts.length, requestedBy})
+    //     const allProducts = await Budget.find()
+    //     res.status(StatusCodes.OK).json({total : allProducts.length, allProducts, requestedBy})
+    // } catch (error) {
+    //     console.log(error)
+    //     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error : error.message})
+    // }
+
+    try {
+            
+        const {name, author, sort, filterPrice} = req.query
+
+        let queryObject = {}
+
+        if (name) {
+            queryObject.budgetName = {$regex : name, $options : 'ix'}
+        }
+
+        if (author) {
+            queryObject.createdBy = {$regex : author, $options : 'xi'} 
+        }
+
+        if (filterPrice) {
+            const operatorMap = {
+                "<" : "$lt",
+                "<=" : "$lte",
+                "=" : "$eq",
+                ">" : "$gt",
+                ">=" : "$gte",
+            }
+
+            const regEx = /\b(<|<=|=|>|>=)\b/g
+
+            let filter = filterPrice.replace(regEx, (match) => `*${operatorMap[match]}*`)
+
+            const options = ['budgetCost']
+
+            filter = filter.split(',').forEach((el) => {
+                const [fields, regex, value] = el.split('*')
+                if(options.includes(fields)) {
+                    queryObject[fields] = {[regex] : Number(value)}
+                }
+            })
+        }
+
+        let result = Budget.find(queryObject)
+
+        if (sort) {
+            const sortList = sort.split(',').join(' ')
+            result = result.sort(sortList)
+        }
+        
+        else {
+            result = result.sort('budgetName')
+        }
+
+        const page = req.query.page || 1
+        const limit = req.query.limit || 10
+        const skip = (page -1) * limit
+
+        result = result.skip(skip).limit(limit)
+
+        const budgets = await result
+        console.log(queryObject)
+        
+        return res.status(StatusCodes.OK).json({total : budgets.length, budgets})
     } catch (error) {
         console.log(error)
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error : error.message})
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error})
     }
 }
 

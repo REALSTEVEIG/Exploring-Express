@@ -5,6 +5,7 @@ const budgetValidator = async (req, res, next) => {
     try {
         const payload = req.body
         await budgetSchema.validateAsync(payload)
+        next()
     } catch (error) {
         console.log(error)
         return res.status(StatusCodes.NOT_ACCEPTABLE).json({error : error.details[0].message})

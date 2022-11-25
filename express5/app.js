@@ -12,6 +12,7 @@ const mongo_url = process.env.MONGO_URI
 const authMiddleware = require('./middlewares/auth')
 const notFoundMiddleware = require('./middlewares/notfound')
 const errorHandlerMiddleware = require('./middlewares/errorhandler')
+// const userValidate = require('./middlewares/userValidate')
 
 app.use(express.json())
 app.use(express.urlencoded({extended : true}))

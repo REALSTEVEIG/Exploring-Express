@@ -2,6 +2,7 @@ const { StatusCodes } = require('http-status-codes')
 const { BadRequestAPIError, NotFoundAPIError } = require('../errors')
 const Budget = require('../models/budget')
 const jwt = require('jsonwebtoken')
+const APIfeatures = require('../util/apifeatures')
 
 exports.createBudget = async (req, res) => {
    try {
@@ -46,126 +47,22 @@ exports.getSingleBudget = async (req, res) => {
 }
 
 exports.getAllbudgets = async (req, res) => {
-    // try {
-    //     const {name, sort, numericFilters} = req.query
-
-    //     let queryObject = {}
-
-    //     if (name) {
-    //         queryObject.budgetName = {$regex : name, $options : "xi"}
-    //     }
-
-    //     if (numericFilters) {
-    //         console.log(queryObject)
-
-    //         const operatorMap = {
-    //             '>' : '$gt',
-    //             '>=' : '$gte',
-    //             '=' : '$eq',
-    //             '<' : '$lt',
-    //             '<=' : '$lte',
-    //         }
-
-    //         const regEx = /\b(>|>=|=|<|<=)\b/g
-
-    //         let filters = numericFilters.replace(regEx, (match) => `-${operatorMap[match]}-`)
-    //         console.log(filters)
-            
-    //         const options = ["price"]
-
-    //         filters = filters.split(',').forEach((item) => {
-    //             const [query, regex, value] = item.split('-')
-    //             if (options.includes(query)) {
-    //                 queryObject[query] = {[regex]:Number(value)}
-    //             }
-    //         })
-    //         console.log(numericFilters)
-    //     }
-
-    //     let result = Budget.find(queryObject)
-
-    //     if (sort) {
-    //         const sortList = sort.split(',').join(' ')
-    //         result = result.sort(sortList)
-    //     }
-
-    //     else {
-    //         result = result.sort('_id')
-    //     }
-
-    //     const page = req.query.page || 1
-    //     const limit = req.query.limit || 10
-    //     const skip = (page -1) * limit
-
-    //     result = result.skip(skip).limit(limit)
-
-    //     const budgets = await result
-
-    //     return res.status(StatusCodes.OK).json({total : budgets.length, budgets})
-    // } catch (error) {
-    //     console.log(error)
-    //     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error})
-    // }
-
     try {
-        const {name, sort, amount} = req.query
+        console.log(req.query)
+        const features =  new APIfeatures(Budget.find({}), req.query)
+        .limitFields()
+        .paginate()
+        .filter()
+        .sort()
 
-        let queryObject = {}
+        console.log(req.query)
 
-        if (name) {
-            queryObject.budgetName = {$regex : name, $options : 'xi'}
-        }
-
-        if (amount) {
-            const operatorMap = {
-                "<" : "$lt",
-                "<=" : "$lte",
-                "=" : "$eq",
-                ">" : "$gt",
-                ">=" : "$gte",
-            }
-
-            const regEx = /\b(<|<=|=|>|>=)\b/g
-
-            let filter = amount.replace(regEx, (match) => `*${operatorMap[match]}*`)
-            console.log(filter)
-            
-            const options = ['price']
-
-            filter = filter.split(',').forEach((item) => {
-                const [fields, regex, value] = item.split('*')
-                if (options.includes(fields)) {
-                    queryObject[fields] = {[regex] : Number(value)}
-                }
-            })
-        }
-
-        let result = Budget.find(queryObject)
-
-        if (sort) {
-            const sortList = sort.split(',').join(' ')
-            result = result.sort(sortList)
-        }
-
-        else {
-            result = result.sort('-budgetName')
-        }
-
-        const page = req.query.page || 1
-        const limit = req.query.limit || 10
-        const skip = (page -1) * limit
-
-        result = result.skip(skip).limit(limit)
-
-        const budgets = await result
-
-        console.log(queryObject)
-
-        return res.status(StatusCodes.OK).json({total : budgets.length, budgets})
-
-    } catch (error) {
-        console.log(error)
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error})
+        const budgets = await features.query
+ 
+         return res.status(StatusCodes.OK).json({total : budgets.length, budgets})
+ } catch (error) {
+         console.log(error)
+         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error})
     }
 }
 

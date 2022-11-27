@@ -15,10 +15,11 @@ const budgetValidate = async (req, res, next) => {
 
 const budgetSchema = Joi.object({
     budgetName: Joi.string()
-        .alphanum()
+        .allow('')
+        .allow(null)
         .min(3)
         .max(30)
-        .required(),
+        .regex(new RegExp, /^\w+(?:\s+\w+)*$/),
 
     featured : Joi.boolean()
         .required(),

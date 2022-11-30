@@ -16,12 +16,14 @@ const budgetSchema = mongoose.Schema({
     },
 
     updatedBy : {
-        tyoe : String
+        type : String
     },
 
     deletedBy : {
         type : String
     }
 })
+
+budgetSchema.index({budgetName : 'text'})
 
 module.exports = mongoose.model('Budget', budgetSchema)

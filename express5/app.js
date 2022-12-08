@@ -13,6 +13,12 @@ const authMiddleware = require('./middlewares/auth')
 const notFoundMiddleware = require('./middlewares/notfound')
 const errorHandlerMiddleware = require('./middlewares/errorhandler')
 const rateLimit = require('express-rate-limit')
+const morgan = require('morgan')
+
+//LOGGING
+const logger = require('./logger/logger')
+
+app.use(morgan('dev'))
 
 const limit = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes //ms means miliseconds and window represents the sessions
@@ -31,6 +37,21 @@ app.use(express.urlencoded({extended : true}))
 app.use(cookieParser())
 
 app.set('trust proxy', 1)
+
+app.get('/', (req, res) => {
+    logger.info('This is a logger info')
+    res.send('Hello from the hompage')
+})
+
+app.get('/error', (req, res) => {
+    throw new Error('An error has occured on this page')
+})
+
+app.use((err, req, res, next) => {
+    logger.error(err.meessage)
+    res.status(500).send('Something went wrong with our server!')
+})
+ 
 app.use('/', authRouter)
 app.use('/', authMiddleware, budgetRouter)
 
@@ -41,7 +62,7 @@ const start = async (url) => {
     try {
         await connectDB(url)
         app.listen(port, () => {
-            console.log(`Server is listening on port ${port}`)
+            logger.info(`Server is listening on port ${port}`)
         })
     } catch (error) {
         console.log(error)

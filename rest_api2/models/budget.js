@@ -12,7 +12,7 @@ const budgetSchema = new mongoose.Schema({
     },
 
     owner : {
-        type : Schema.Types.Mixed,
+        type : Schema.Types.ObjectId,
         ref : "User",
         required: [true, "Budget must have an owner"],
     }
@@ -27,7 +27,7 @@ const budgetSchema = new mongoose.Schema({
 budgetSchema.pre(/^find/, function (next) {
     this.populate({
       path: "owner",
-      select: "username",
+      select: "",
     });
     next();
   });

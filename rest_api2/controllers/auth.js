@@ -28,16 +28,17 @@ exports.sign_up = async (req, res) => {
 
 exports.log_in = async (req, res) => {
     try {
-        const user = await User.findOne(
-            {where : {email : req.body.email}})
-        
+        const {email, password} = req.body
+
+        const user = await User.findOne({email})
+
             if (!user) {
                 return res
                     .status(StatusCodes.NOT_FOUND)
                     .json({error : `User not found!`})
             }
 
-        const passwordCorrect = await user.comparePasswords(req.body.password)
+        const passwordCorrect = await user.comparePasswords(password)
 
         if (!passwordCorrect) {
             return res

@@ -3,7 +3,7 @@ const Budget = require('../models/budget')
 const catchAsync = require("../util/catchAsync");
 
 exports.setOwnerId = catchAsync(async (req, res, next) => {
-    req.body.owner = req.user.username;
+    req.body.owner = req.user.id;
     next();
   });
 

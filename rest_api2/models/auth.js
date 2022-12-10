@@ -29,7 +29,7 @@ const authSchema = mongoose.Schema({
 authSchema.virtual("budgets", {
     ref: "Budget",
     foreignField: "owner",
-    localField: "_id",
+    localField: "username",
   });
 
 authSchema.pre('save', async function () {

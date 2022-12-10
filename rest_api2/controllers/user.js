@@ -27,7 +27,7 @@ exports.getSingleUser = async (req, res) => {
             users.password = undefined
         return res
             .status(StatusCodes.OK)
-            .json({users})
+            .json({No_of_budgets : users.budgets.length, User : users})
     } catch (error) {
         console.log(error)
         return res

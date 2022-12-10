@@ -12,7 +12,7 @@ const budgetSchema = new mongoose.Schema({
     },
 
     owner : {
-        type : Schema.Types.ObjectId,
+        type : Schema.Types.Mixed,
         ref : "User",
         required: [true, "Budget must have an owner"],
     }

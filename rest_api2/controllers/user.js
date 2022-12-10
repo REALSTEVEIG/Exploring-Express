@@ -19,7 +19,12 @@ exports.getAllUsers = async (req, res) => {
 exports.getSingleUser = async (req, res) => {
     try {
         const users = await User.findById(req.params.id)
-            .populate({path : 'budgets', model : Budget})
+            .populate(
+                {path : 'budgets', 
+                model : Budget, 
+                select: {"budget_name" : 1, "budget_price" : 1}})
+
+            users.password = undefined
         return res
             .status(StatusCodes.OK)
             .json({users})

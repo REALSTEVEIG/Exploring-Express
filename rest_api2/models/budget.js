@@ -24,12 +24,12 @@ const budgetSchema = new mongoose.Schema({
 }
 )
 
-budgetSchema.pre(/^find/, function (next) {
-    this.populate({
-      path: "owner",
-      select: "",
-    });
-    next();
-  });
+// budgetSchema.pre(/^find/, function (next) {
+//     this.populate({
+//       path: "owner",
+//       select: {"budget_name" : 1, "budget_price" : 1}
+//     });
+//     next();
+//   });
 
 module.exports = mongoose.model('Budget', budgetSchema)

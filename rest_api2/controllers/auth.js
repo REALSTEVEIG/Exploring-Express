@@ -73,7 +73,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = await JWT.verify(token, process.env.JWT_SECRET);
     if (!decoded) return next(new AppError("Token is invalid", 401));
-    const user = await User.findOne({username : decoded.username});
+    const user = await User.findById(decoded.id);
     // console.log(user)
     if (!user) {
       return next(new AppError("user does not exist", 401));

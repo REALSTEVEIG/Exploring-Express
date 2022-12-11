@@ -13,7 +13,7 @@ router.route('/budget')
 
 router.route('/budget/:id')
     .get(getSingleBudget)
-    .patch(updateBudget)
-    .delete(deleteBudget)
+    .patch(protect, setOwnerId, updateBudget)
+    .delete(protect, setOwnerId ,deleteBudget)
 
 module.exports = router

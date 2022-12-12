@@ -54,11 +54,65 @@ exports.getSingleBudget = async (req, res) => {
 
 exports.getAllBudgets = async (req, res) => {
     try {
-        // console.log('all budgets')
-        // res.send('all budgets')
+        const {filter, sort, fields, numerical} = req.query
 
+        let queryString = {}
+
+        if (req.query.filter) {
+            queryString.budget_name = {$regex : filter, $options : 'xi'}
+        }
+
+        if (numerical) {
+            const operatorMap = {
+                '<' : '$lt',
+                '<=' : '$lte',
+                '=' : '$eq',
+                '>' : '$gt',
+                '>=' : '$gte'
+            }
+
+            const regex = /\b(<|<=|=|>|>=)\b/g
+
+            let filter = numerical.replace(regex, (match) => `*${operatorMap[match]}*`)
+            console.log(filter)
+
+            const options = ['budget_price']
+
+            filter = filter.split(',').forEach((item) => {
+                const [fields, regex, value] = item.split('*')
+                if (options.includes(fields)) {
+                    queryString[fields] = {[regex] : Number(value)}
+                }
+            })
+        }
+
+        let result = Budget.find(queryString)
+
+        if (req.query.sort) {
+            const sortList = sort.split(',').join(' ')
+            result = result.sort(sortList)
+        }
+
+        else {
+            result = result.sort('budget_name')
+        }
+
+        if (req.query.fields) {
+            const fieldsList = fields.split(',').join(' ')
+            result = result.select(fieldsList)
+        }
+
+        const page = req.query.page || 1
+        const limit = req.query.limit || 5
+        const skip = (page - 1) * limit
+
+        result = result.skip(skip).limit(limit)
+
+        console.log(queryString)
+
+        let findAll = await result
   
-
+        return res.status(StatusCodes.OK).json({total : findAll.length ,findAll})
     } catch (error) {
         console.log(error)
         res.send(error)

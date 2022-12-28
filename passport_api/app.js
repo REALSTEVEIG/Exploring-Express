@@ -5,6 +5,8 @@ const app = express()
 const port = 3000
 const connectDB = require('./db/connect')
 const userRouter = require('./routes/user')
+const productRouter = require('./routes/products')
+const authMiddleware = require('./middleware/auth')
 
 //User Schema
 const User = require('./models/users')
@@ -15,7 +17,6 @@ const MongoStore = require('connect-mongo');
 
 //passport
 const passport = require('passport')
-const LocalStrategy = require('passport-local')
 
 app.use(session({
     secret: "my-session-secret",
@@ -24,7 +25,7 @@ app.use(session({
     cookie: {
         maxAge: 5 * 60 * 1000 
     },
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI })
 }))
 
 //passport initialize
@@ -41,6 +42,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended : true}))
 
 app.use('/', userRouter)
+app.use('/', authMiddleware ,productRouter)
 
 const start = async () => {
     try {

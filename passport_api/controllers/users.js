@@ -36,3 +36,14 @@ exports.login = async (req, res, next) => {
         });
       })(req, res, next);
 }
+
+exports.logout = (req, res) => {
+    try {
+        req.session.destroy()
+        res.clearCookie('session-id')
+        res.json({message : 'Logged out successfully!'})
+    } catch (error) {
+        console.log(error)
+        res.json({error : error.message})
+    }
+}

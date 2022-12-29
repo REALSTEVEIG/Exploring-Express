@@ -1,5 +1,7 @@
 const User = require('../models/users')
 const passport = require('passport')
+//Logging
+const logger = require('../logger/logger')
 
 exports.register = async (req, res) => {
     try {
@@ -7,10 +9,14 @@ exports.register = async (req, res) => {
             {username : req.body.username, email : req.body.email}),
             req.body.password)
 
-        return res.status(201).json({Message : `Welcome ${req.body.username}!`, user})
+        logger.info(user)
+        return res
+          .status(201)
+          .json({Message : `Welcome ${req.body.username}!`, user})
     } catch (error) {
        console.log(error)
-       return res.json({error : error.message}) 
+       return res
+          .json({error : error.message}) 
     }
 }
 

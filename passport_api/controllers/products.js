@@ -1,8 +1,11 @@
 const Product = require('../models/products')
+//Logging
+const logger = require('../logger/logger')
 
 exports.createProduct = async (req, res) => {
     try {
         const product = await Product.create({...req.body, owner : req.user.username})
+        logger.info(product)
         return res
             .status(201)
             .json({Message : `New product added successfuly by ${req.user.username}`, product})
@@ -91,11 +94,11 @@ exports.getSingleProduct = async (req, res) => {
         const {id : productId} = req.params
         const product = await Product.findOne({_id : productId})
         if (!product) {
+            logger.error(`No product with id ${productId}`)
             return res
                 .status(404)
                 .json({error : `No product with id ${productId}`})
         }
-
         return res
             .status(200)
             .json({product})
@@ -120,6 +123,7 @@ exports.updateProduct = async (req, res) => {
                 .json({error : `No product with ID ${productId} was found in our database`})
         }
 
+        logger.info(updateProduct)
         return res
             .status(201)
             .json({updateProduct})

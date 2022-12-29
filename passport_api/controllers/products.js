@@ -16,10 +16,68 @@ exports.createProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
     try {
-        const products = await Product.find({})
+        const {name, fields, sort, amount} = req.query
+
+        let queryObject = {}
+
+        if (name) {
+            queryObject.product_name = {$regex : name, $options : 'xi'}
+        }
+
+        if (amount) {
+            const operatorMap = {
+                '<' : '$lt',
+                '<=' : '$lte',
+                '=' : '$eq',
+                '>' : '$gt',
+                '>=' : '$gte' 
+            }
+
+            const regEx = /\b(<|<=|=|>|>=)\b/g
+
+            let filter = amount.replace(regEx, (match) => `*${operatorMap[match]}*`)
+
+            console.log(filter)
+
+            const options = ['price']
+
+            filter = filter.split(',').forEach((el) => {
+                const [fields, regex, value] = el.split('*')
+                if (options.includes(fields)) {
+                    queryObject[fields] = {[regex] : Number(value)}
+                }
+            })
+        }
+
+        console.log(queryObject)
+
+        let result = Product.find(queryObject)
+
+        if (fields) {
+            const fieldsList = fields.split(',').join(' ')
+            result = result.select(fieldsList)
+        }
+
+        if (sort) {
+            const sortList = sort.split(',').join(' ')
+            result = result.sort(sortList)
+        }
+
+        else {
+            result = result.sort('product_name')
+        }
+
+        const page = req.query.page || 1
+        const limit = req.query.limit || 5
+        const skip = (page -1) * limit
+
+        result = result.skip(skip).limit(limit)
+
+        const products = await result
+
         return res
             .status(200)
-            .json({products})
+            .json({Total : products.length, products})
     } catch (error) {
         console.log(error)
         return res

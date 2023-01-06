@@ -4,34 +4,35 @@ const {BadRequestAPIError} = require('../errors')
 
 exports.register = async (req, res) => {
     try {
-        const {username, email, password} = req.body
-
-        if (!username || !email || !password) {
-           throw new BadRequestAPIError('Please provide all the required parameters!')
-        }
-       
-        const user = await Auth.findOne({email})
-       
-        if (user) {
-           throw new BadRequestAPIError('Email already exist exists please provide a different one')
-       }
-       
-        const newUser = await Auth.create({...req.body})
-       
-        const token = newUser.createJWT()
-       
-        res.cookie('token', token, {
-            secure: false, // set to true if you're using https || very important
-            httpOnly: true,
-          })
-       
-        return res.status(StatusCodes.CREATED).json({newUser, token})
+      const { username, email, password } = req.body;
+  
+      // Validate request body
+      if (!username || !email || !password) {
+        throw new BadRequestAPIError('Please provide all the required parameters!');
+      }
+  
+      // Check if email already exists
+      const user = await Auth.findOne({ email });
+      if (user) {
+        throw new BadRequestAPIError('Email already exists. Please provide a different one.');
+      }
+  
+      // Create new user
+      const newUser = await Auth.create({ ...req.body });
+      const token = newUser.createJWT();
+  
+      res.cookie('token', token, {
+        secure: false, // set to true if you're using https || very important
+        httpOnly: true,
+      });
+  
+      return res.status(StatusCodes.CREATED).json({ newUser, token });
     } catch (error) {
-        console.log(error.message)
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg : error.message})
+      console.error(error.message);
+      return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
     }
-}
-
+  };
+  
 exports.login = async (req, res) => {
     try {
         const {email, password} = req.body

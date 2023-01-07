@@ -10,14 +10,7 @@ jest.setTimeout(30000);// timeout set to 30 seconds
 describe('API endpoints', () => {
     beforeAll(async () => {
         await mongoose.connect(process.env.MONGODB_URI, {useUnifiedTopology: true, useNewUrlParser: true})
-        .then(() => {
-          console.log("DB connection successful!");
-        })
-        .catch((err) => {
-          console.log("could not connect to MongoDB");
-          console.log(err);
-        });
-
+        
           // Check if the connection is open before running any tests
 
         const connection = mongoose.connection;

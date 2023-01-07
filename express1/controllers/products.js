@@ -20,11 +20,12 @@ exports.createProduct = async (req, res) => {
 
         const newProduct = await Product.create({...req.body, createdBy})
 
-        console.log(req.cookies)
+        // console.log(req.cookies)
         
         return res.status(StatusCodes.CREATED).json({newProduct})
 
     } catch (error) {
+        console.log(error)
         console.log(error.message)
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg :error.message})
     }
@@ -43,6 +44,7 @@ exports.getSingleProduct = async (req, res) => {
 
     return res.status(StatusCodes.OK).json({msg : singleProduct})
     } catch (error) {
+        console.log(error)
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error : error.message})
     }
 }

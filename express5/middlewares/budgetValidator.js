@@ -21,9 +21,6 @@ const budgetSchema = Joi.object({
         .max(30)
         .regex(new RegExp, /^\w+(?:\s+\w+)*$/),
 
-    featured : Joi.boolean()
-        .required(),
-
     price : Joi.number()
         .required()
 })

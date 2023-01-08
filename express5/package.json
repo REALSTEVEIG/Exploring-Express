@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app"
+    "start": "nodemon app",
+    "test": "jest --detectOpenHandles --coverage --runInBand"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +18,7 @@
     "express-async-error": "^0.0.2",
     "express-rate-limit": "^6.7.0",
     "http-status-code": "^2.1.0",
+    "jest": "^29.3.1",
     "joi": "^17.7.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.6.6",

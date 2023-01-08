@@ -75,11 +75,7 @@ exports.updateBudget = async (req, res) => {
 
         const requestedBy = payload.username
 
-        const {params : {id : budgetId}, body : {budgetName, budgetPrice}} = req
-
-        if (!budgetName || !budgetPrice) {
-            throw new BadRequestAPIError('Please provide all the required parameters')
-        }
+        const {id : budgetId} = req.params
 
         const updateBudget = await Budget.findByIdAndUpdate({_id : budgetId}, req.body, {runValidators : true, new : true})
 

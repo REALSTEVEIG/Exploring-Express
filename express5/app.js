@@ -58,15 +58,4 @@ app.use('/', authMiddleware, budgetRouter)
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
 
-const start = async (url) => {
-    try {
-        await connectDB(url)
-        app.listen(port, () => {
-            logger.info(`Server is listening on port ${port}`)
-        })
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-start(mongo_url)
+module.exports = app

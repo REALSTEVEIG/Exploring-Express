@@ -3,7 +3,6 @@ require('express-async-errors')
 
 const express = require('express')
 const app = express()
-const port = 7700 
 const connect = require('./db/connect')
 const authRouter = require('./routes/auth')
 const budgetRouter = require('./routes/budget')
@@ -21,15 +20,4 @@ app.use('/', authHandlerMiddleware ,budgetRouter)
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
 
-const start = async (url) => {
-    try {
-        await connect(url)
-        app.listen(port, () => {
-            console.log(`Server is listening on port ${port}`)
-        })
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-start(process.env.MONGO_URI)
+module.exports = app

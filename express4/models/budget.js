@@ -6,7 +6,7 @@ const budgetSchema = mongoose.Schema({
         required : [true, `Please provide a budget name`]
     },
 
-    budgetCost : {
+    price : {
         type : Number,
         required : [true, 'Please specify the amount intended for use']
     },

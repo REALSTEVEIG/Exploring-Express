@@ -13,12 +13,6 @@ exports.createBudget = async (req, res) => {
         const payload = jwt.verify(token, process.env.JWT_SECRET)
 
         const createdBy = payload.username
-
-        const {budgetName, budgetCost} = req.body
-
-        if (!budgetName || !budgetCost) {
-            throw new BadRequestAPIError('Please provide budget name and cost!')
-        }
     
         const newBudget = await Budget.create({...req.body, createdBy})   
 
@@ -151,11 +145,7 @@ exports.getSingleBudget = async (req, res) => {
 
 exports.updateBudget = async (req, res) => {
   try {
-    const {params : {id : updateBudget}, body: {budgetName, budgetCost}} = req
-
-    if (!budgetName || !budgetCost) {
-        throw new BadRequestAPIError('Please provide all the required parameters')
-    }
+    const {id : updateBudget} = req.params
 
     const newBudget = await Budget.findByIdAndUpdate({_id : updateBudget}, req.body, {runValidators : true, new : true})
 

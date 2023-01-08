@@ -102,7 +102,7 @@ exports.getAllBudgets = async (req, res) => {
         result = result.skip(skip).limit(limit)
 
         const budgets = await result
-        console.log(queryObject)
+        // console.log(queryObject)
         
         return res.status(StatusCodes.OK).json({total : budgets.length, budgets})
     } catch (error) {
@@ -115,7 +115,7 @@ exports.getAllBudgets = async (req, res) => {
 exports.updateBudget = async (req, res) => {
    try {
 
-    const {params : {id : budgetId}, body : {budgetName, budgetExpense}} = req
+    const {id : budgetId} = req.params
 
     const cookie = req.cookies.token 
 
@@ -124,10 +124,6 @@ exports.updateBudget = async (req, res) => {
     const updatedBy = payload.username
 
     req.body.updatedBy = updatedBy
-
-    if (!budgetName || !budgetExpense || !updatedBy) {
-        throw new BadRequestAPIError('Please provide all the required parameters')
-    }
 
     const updateBudget = await Budget.findByIdAndUpdate({_id : budgetId}, req.body , {new : true, runValidators : true}) 
 

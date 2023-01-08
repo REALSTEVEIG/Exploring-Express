@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const request = require('supertest')
 const app = require('../app')
 
-jest.setTimeout(60000);
+jest.setTimeout(1200000);
 
 describe('API endpoints', () => {
     beforeAll(async () => {

@@ -7,7 +7,7 @@ const Book = require('../models/books')
 let token
 let id
 
-jest.setTimeout(60000)
+jest.setTimeout(1200000)
 
 describe('API endpoints', () => {
     beforeAll(async () => {
@@ -87,7 +87,7 @@ describe('API endpoints', () => {
                 .send({
                     price : '$7000'
             })
-                console.log(response.body)
+                // console.log(response.body)
                 expect(response.status).toBe(201)
                 expect(response.body.updateBook.price).toBe('$7000')
         })

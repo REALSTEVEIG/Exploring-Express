@@ -15,9 +15,9 @@ exports.createBook = async (req, res) => {
         const payload = jwt.verify(token, process.env.JWT_SECRET)
         const createdBy =  payload.username
     
-        const newProduct = await Books.create({...req.body, createdBy})
+        const newBook = await Books.create({...req.body, createdBy})
 
-        return res.status(StatusCodes.CREATED).json({msg : `New book created successflly`, newProduct})
+        return res.status(StatusCodes.CREATED).json({msg : `New book created successflly`, newBook})
     } catch (error) {
         console.log(error)
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error : error.message})
@@ -61,13 +61,13 @@ exports.getAllBooks = async (req, res) => {
 
         const requestedBy = payload.username
         
-        const allProducts = await Books.find()
+        const allBooks = await Books.find()
 
-        if (!allProducts) {
+        if (!allBooks) {
             throw new NotFoundAPIError('There are no books in your database for now')
         }
     
-        return res.status(StatusCodes.OK).json({allProducts, requestedBy, total : allProducts.length})
+        return res.status(StatusCodes.OK).json({allBooks, requestedBy, total : allBooks.length})
     } catch (error) {
         console.log(error)
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error : error.message})
@@ -83,12 +83,8 @@ exports.updateBook = async (req, res) => {
 
         const payload = jwt.verify(token, process.env.JWT_SECRET)
 
-        const {params : {id : bookId}, body : {title, author, price}} = req
+        const {id : bookId} = req.params
 
-        if (!title || !author || !price) {
-            throw new BadRequestAPIError('Please provide all the required parameters')
-        }
-    
         const updateBook = await Books.findByIdAndUpdate({_id : bookId}, req.body, {new : true, runValidators : true})
     
         if (!updateBook) { 
